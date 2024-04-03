@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class AdminView extends Layout {
@@ -35,17 +37,13 @@ public class AdminView extends Layout {
         }
         this.lbl_welcome.setText(this.user.getUsername());
 
-        Object[] col_brand = {"Brand ID", "Brand Name"};
-        ArrayList<Brands> brandsList = brandManager.findAll();
-        this.tmdl_brand.setColumnIdentifiers(col_brand);
-        for (Brands brands : brandsList) {
-            Object[] obj = {brands.getId(), brands.getName()};
-            this.tmdl_brand.addRow(obj);
-        }
+        loadBrandTable();
+        loadBrandComponent();
 
-        this.tbl_brand.setModel(tmdl_brand);
-        this.tbl_brand.getTableHeader().setReorderingAllowed(false);
-        this.tbl_brand.setEnabled(false);
+        this.tbl_brand.setComponentPopupMenu(brandMenu);
+    }
+
+    public void loadBrandComponent() {
         this.tbl_brand.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -55,20 +53,38 @@ public class AdminView extends Layout {
         });
 
         this.brandMenu = new JPopupMenu();
-
         this.brandMenu.add("New").addActionListener(e -> {
-            System.out.println("new");
+            BrandView brandView = new BrandView(null);
+            brandView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadBrandTable();
+                }
+            });
         });
         this.brandMenu.add("Update").addActionListener(e -> {
-            System.out.println("up");
+            int selectBrandId = Integer.parseInt(tbl_brand.getValueAt(tbl_brand.getSelectedRow(), 0).toString());
+            BrandView brandView = new BrandView(this.brandManager.getByID(selectBrandId));
+            brandView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadBrandTable();
+                }
+            });
         });
 
         this.brandMenu.add("Delete").addActionListener(e -> {
             System.out.println("Del");
         });
 
+    }
 
-        this.tbl_brand.setComponentPopupMenu(brandMenu);
+    public void loadBrandTable() {
+        Object[] col_brand = {"Brand ID", "Brand Name"};
+        ArrayList<Object[]> brandList = this.brandManager.getForTable(col_brand.length);
+        this.createTable(this.tmdl_brand, this.tbl_brand, col_brand, brandList);
+
+
     }
 
 

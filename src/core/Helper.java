@@ -30,14 +30,21 @@ public class Helper {
                 title = "Warning";
                 break;
             case "done":
-                msg = "Login Succesfull";
+                msg = "Succesfull";
                 title = "Warning";
                 break;
             case "notFound":
                 msg = "Login unsuccesfull";
                 title = "Warning";
                 break;
-
+            case "saveError":
+                msg = "Save already exists!";
+                title = "Warning";
+                break;
+            case "updateError":
+                msg = "Save not found!";
+                title = "Warning";
+                break;
             default:
                 msg = str;
                 title = "Result";
