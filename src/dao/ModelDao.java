@@ -40,6 +40,11 @@ public class ModelDao {
         return this.selectByQuery("SELECT * FROM public.model ORDER BY model_id ASC");
     }
 
+    public ArrayList<Model> getByListBrandID(int brandId) {
+
+        return this.selectByQuery("SELECT * FROM public.model WHERE model_brand_id = " + brandId);
+    }
+
 
     public ArrayList<Model> selectByQuery(String query) {
         ArrayList<Model> modelList = new ArrayList<>();
@@ -59,15 +64,16 @@ public class ModelDao {
     }
 
     public boolean save(Model model) {
-        String query = "INSERT INTO public.model" +
-                "(" + "model_brand_id," +
-                "model_name," +
-                "model_type," +
-                "model_year," +
-                "model_fuel," +
-                "model_gear," +
+        String query = "INSERT INTO public.model " +
+                "(" +
+                "model_brand_id, " +
+                "model_name, " +
+                "model_type, " +
+                "model_year, " +
+                "model_fuel, " +
+                "model_gear " +
                 ")" +
-                " VALUES (?, ?, ?, ?, ?, ?";
+                " VALUES (?,?,?,?,?,?)";
         try {
             PreparedStatement pr = this.con.prepareStatement(query);
             pr.setInt(1, model.getBrand_id());
@@ -78,23 +84,22 @@ public class ModelDao {
             pr.setString(6, model.getGear().toString());
             return pr.executeUpdate() != -1;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
 
         }
         return true;
     }
 
     public boolean update(Model model) {
-        String query = "Update public.model SET" +
-                "(" + "model_brand_id," +
-                "model_name," +
-                "model_type," +
-                "model_year," +
-                "model_fuel," +
-                "model_gear," +
-                ")" +
-                " VALUES (?, ?, ?, ?, ?, ?";
+        String query = "UPDATE public.model SET " +
+                "model_brand_id = ? ," +
+                "model_name = ?, " +
+                "model_type = ?, " +
+                "model_year = ?, " +
+                "model_fuel = ?, " +
+                "model_gear = ? " +
+                "WHERE model_id = ?";
         try {
             PreparedStatement pr = this.con.prepareStatement(query);
             pr.setInt(1, model.getBrand_id());
@@ -103,6 +108,7 @@ public class ModelDao {
             pr.setString(4, model.getYear());
             pr.setString(5, model.getFuel().toString());
             pr.setString(6, model.getGear().toString());
+            pr.setInt(7, model.getId());
             return pr.executeUpdate() != -1;
 
         } catch (SQLException e) {

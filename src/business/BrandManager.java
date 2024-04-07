@@ -3,14 +3,19 @@ package business;
 import core.Helper;
 import dao.BrandDao;
 import entity.Brands;
+import entity.Model;
+//import jdk.internal.icu.text.NormalizerBase;
+//mport sun.security.mscapi.CPublicKey;
 
 import java.util.ArrayList;
 
 public class BrandManager {
     private final BrandDao brandDao;
+    private final ModelManager modelManager;
 
     public BrandManager() {
         this.brandDao = new BrandDao();
+        this.modelManager = new ModelManager();
     }
 
     public ArrayList<Object[]> getForTable(int size) {
@@ -55,6 +60,10 @@ public class BrandManager {
     public boolean delete(int id){
         if(this.getByID(id) == null){
             Helper.showMsg("updateError");
+            return false;
+        }
+        for(Model model : this.modelManager.getByListBrandID(id)){
+            this.modelManager.delete(model.getId());
         }
         return this.brandDao.delete(id);
 

@@ -45,6 +45,10 @@ public class Helper {
                 msg = "Save not found!";
                 title = "Warning";
                 break;
+            case "error":
+                msg = "Error!";
+                title = "Warning";
+                break;
             default:
                 msg = str;
                 title = "Result";
