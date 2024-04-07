@@ -4,6 +4,8 @@ import core.Helper;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Layout extends JFrame {
@@ -35,6 +37,20 @@ public class Layout extends JFrame {
 
             model.addRow(row);
         }
+    }
+
+    public int getTableSelectedRow(JTable table, int index){
+        return Integer.parseInt(table.getValueAt(table.getSelectedRow(), index).toString());
+
+    }
+    public void tableRowSelect(JTable table){
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedRow = table.rowAtPoint(e.getPoint());
+                table.setRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
     }
 
 }

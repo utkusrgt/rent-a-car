@@ -78,4 +78,14 @@ public class Helper {
         };
 
     }
+
+    public static boolean confirm(String str){
+        String msg;
+        if(str.equals("sure")){
+            msg = "This will delete the item completely, please confirm";
+        }else{
+            msg = str;
+        }
+        return JOptionPane.showConfirmDialog(null,msg, "Are you sure? ", JOptionPane.YES_NO_OPTION) == 0;
+    }
 }

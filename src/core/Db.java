@@ -13,6 +13,7 @@ public class Db {
 
         private Db(){
             try {
+                
 
                 this.connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASS);
 

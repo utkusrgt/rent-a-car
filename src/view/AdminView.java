@@ -1,7 +1,8 @@
 package view;
 
 import business.BrandManager;
-import entity.Brands;
+import business.ModelManager;
+import core.Helper;
 import entity.User;
 
 import javax.swing.*;
@@ -16,18 +17,25 @@ public class AdminView extends Layout {
     private JPanel container;
     private JLabel lbl_welcome;
     private JPanel pnl_top;
-    private JTabbedPane tab_menu;
+    private JTabbedPane pnl;
     private JButton btn_logout;
     private JPanel pnl_brand;
     private JScrollPane scr_brand;
     private JTable tbl_brand;
+    private JPanel pnl_mdel;
+    private JScrollPane scroll_model;
+    private JTable tbl_model;
     private User user;
     private DefaultTableModel tmdl_brand = new DefaultTableModel();
+    private DefaultTableModel tmdl_model = new DefaultTableModel();
     private BrandManager brandManager;
+    private ModelManager modelManager;
     private JPopupMenu brandMenu;
+    private JPopupMenu modelMenu;
 
     public AdminView(User user) {
         this.brandManager = new BrandManager();
+        this.modelManager = new ModelManager();
         this.add(container);
         this.initializeGUI(400, 400);
         this.user = user;
@@ -39,18 +47,34 @@ public class AdminView extends Layout {
 
         loadBrandTable();
         loadBrandComponent();
+        loadModelTable();
+        tableRowSelect(this.tbl_model);
+        this.modelMenu = new JPopupMenu();
 
-        this.tbl_brand.setComponentPopupMenu(brandMenu);
+        this.modelMenu.add("New").addActionListener(e -> {
+
+        });
+        this.modelMenu.add("Update").addActionListener(e -> {
+
+
+        });
+
+        this.modelMenu.add("Delete").addActionListener(e -> {
+
+
+        });
+        this.tbl_model.setComponentPopupMenu(modelMenu);
+
+
+
+
+
+
     }
 
+
     public void loadBrandComponent() {
-        this.tbl_brand.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int selectedRow = tbl_brand.rowAtPoint(e.getPoint());
-                tbl_brand.setRowSelectionInterval(selectedRow, selectedRow);
-            }
-        });
+        tableRowSelect(tbl_brand);
 
         this.brandMenu = new JPopupMenu();
         this.brandMenu.add("New").addActionListener(e -> {
@@ -63,19 +87,24 @@ public class AdminView extends Layout {
             });
         });
         this.brandMenu.add("Update").addActionListener(e -> {
-            int selectBrandId = Integer.parseInt(tbl_brand.getValueAt(tbl_brand.getSelectedRow(), 0).toString());
+            int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
             BrandView brandView = new BrandView(this.brandManager.getByID(selectBrandId));
-            brandView.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    loadBrandTable();
-                }
-            });
+
         });
 
         this.brandMenu.add("Delete").addActionListener(e -> {
-            System.out.println("Del");
+
+            if(Helper.confirm("sure")){
+                int selectBrandId = this.getTableSelectedRow(tbl_brand, 0);
+                if(this.brandManager.delete(selectBrandId));
+                Helper.showMsg("done");
+                loadBrandTable();
+            }else{
+                Helper.showMsg("updateError");
+            }
+
         });
+        this.tbl_brand.setComponentPopupMenu(brandMenu);
 
     }
 
@@ -86,6 +115,14 @@ public class AdminView extends Layout {
 
 
     }
+
+    public void loadModelTable(){
+        Object[] col_model = {"Model ID" , "Brand", "Model", "Type", "Year", "Fuel", "Gear"};
+        ArrayList<Object[]> modelList = this.modelManager.getForTable(col_model.length, this.modelManager.findAll());
+        this.createTable(this.tmdl_model, this.tbl_model, col_model, modelList);
+
+    }
+
 
 
 }

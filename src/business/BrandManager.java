@@ -43,6 +43,7 @@ public class BrandManager {
         return this.brandDao.getById(id);
     }
 
+
     public boolean update(Brands brands) {
         if (this.getByID(brands.getId()) == null) {
             Helper.showMsg("updateError");
@@ -50,4 +51,14 @@ public class BrandManager {
         }
         return this.brandDao.update(brands);
     }
+
+    public boolean delete(int id){
+        if(this.getByID(id) == null){
+            Helper.showMsg("updateError");
+        }
+        return this.brandDao.delete(id);
+
+
+    }
+
 }
