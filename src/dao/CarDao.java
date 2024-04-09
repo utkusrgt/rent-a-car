@@ -99,18 +99,18 @@ public class CarDao {
 
     public boolean update(Car car) {
         String query = "UPDATE public.car SET " +
-                "car_model_id = ? ," +
-                "car_color = ?, " +
-                "car_km = ?, " +
+                "car_model_id = ?, " +
+                "car_color = ? , " +
+                "car_km = ? , " +
                 "car_plate = ? " +
-                "WHERE model_id = ?";
+                "WHERE car_id = ?";
         try {
             PreparedStatement pr = this.con.prepareStatement(query);
             pr.setInt(1, car.getModel_id());
             pr.setString(2, car.getColor().toString());
             pr.setInt(3, car.getKm());
             pr.setString(4, car.getPlate());
-            pr.setInt(7, car.getId());
+            pr.setInt(5, car.getId());
             return pr.executeUpdate() != -1;
 
         } catch (SQLException e) {
@@ -121,7 +121,7 @@ public class CarDao {
     }
 
     public boolean delete(int carID) {
-        String query = "DELETE FROM public.model WHERE car_id = ?";
+        String query = "DELETE FROM public.car WHERE car_id = ?";
         try {
             PreparedStatement pr = this.con.prepareStatement(query);
             pr.setInt(1,carID);

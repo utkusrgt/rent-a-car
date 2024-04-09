@@ -12,8 +12,10 @@ import entity.User;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class AdminView extends Layout {
@@ -41,17 +43,30 @@ public class AdminView extends Layout {
     private JButton btn_cncl_model;
     private JPanel pnl_car;
     private JScrollPane scrl_car;
+    private JTextField fld_strt_date;
+    private JTextField fld_fnsh_date;
+    private JComboBox cmb_booking_gear;
+    private JComboBox cmb_booking_fuel;
+    private JComboBox cmb_booking_type;
+    private JTable tbl_booking;
+    private JButton btn_book_find;
+    private JScrollPane scrl_booking;
+    private JPanel pnl_booking;
+    private JButton btn_cncl_booking;
     private User user;
     private DefaultTableModel tmdl_brand = new DefaultTableModel();
     private DefaultTableModel tmdl_model = new DefaultTableModel();
     private DefaultTableModel tmdl_car = new DefaultTableModel();
+    private DefaultTableModel tmdl_booking = new DefaultTableModel();
     private BrandManager brandManager;
     private ModelManager modelManager;
     private CarManager carManager;
     private JPopupMenu brand_Menu;
     private JPopupMenu model_Menu;
     private JPopupMenu car_menu;
+    private JPopupMenu bookingMenu;
     private Object[] col_model;
+    private Object[] col_car;
 
 
     public AdminView(User user) {
@@ -82,7 +97,38 @@ public class AdminView extends Layout {
         loadCarTable();
         loadCarComponent();
 
+        //Booking Tab
+        loadBookingTable(null);
+        loadBookingComponent();
+        loadBookingFilter();
 
+
+        btn_book_find.addActionListener(e -> {
+            ArrayList<Car> carList = this.carManager.searchForBooking(
+                    fld_strt_date.getText(),
+                    fld_fnsh_date.getText(),
+                    (Model.Type)cmb_booking_type.getSelectedItem(),
+                    (Model.Gear)cmb_booking_gear.getSelectedItem(),
+                    (Model.Fuel)cmb_booking_fuel.getSelectedItem()
+            );
+
+            ArrayList<Object[]> carBookingRow = this.carManager.getForTable(this.col_car.length, carList);
+            loadBookingTable(carBookingRow);
+
+        });
+        btn_cncl_booking.addActionListener(e -> {
+            loadBookingFilter();
+
+        });
+    }
+
+    public void loadBookingComponent(){
+        tableRowSelect(this.tbl_booking);
+        this.bookingMenu = new JPopupMenu();
+        this.bookingMenu.add("Rent").addActionListener(e -> {
+
+        });
+        this.tbl_booking.setComponentPopupMenu(bookingMenu);
     }
 
     public void loadCarComponent(){
@@ -96,6 +142,7 @@ public class AdminView extends Layout {
                     loadCarTable();
                 }
             });
+
         });
 
         this.car_menu.add("Update").addActionListener(e -> {
@@ -107,6 +154,7 @@ public class AdminView extends Layout {
                     loadCarTable();
                 }
             });
+            loadCarTable();
 
 
 
@@ -117,6 +165,7 @@ public class AdminView extends Layout {
                 if(this.carManager.delete(selectCarID));
                 Helper.showMsg("done");
                 loadModelTable(null);
+                loadCarTable();
             }else{
                 Helper.showMsg("updateError");
             }
@@ -126,13 +175,6 @@ public class AdminView extends Layout {
 
 
     }
-
-
-
-
-
-
-
 
 
 
@@ -278,6 +320,22 @@ public class AdminView extends Layout {
 
     }
 
+    public void loadCarTable(){
+
+        col_car = new Object[]{"ID", "Brand", "Model", "Plate", "Color", "KM", "Year", "Type", "Fuel", "Gear"};
+        ArrayList<Object[]> carList = this.carManager.getForTable(col_car.length, this.carManager.findAll());
+        createTable(this.tmdl_car, this.tbl_car, col_car, carList);
+
+    }
+
+    public void loadBookingTable(ArrayList<Object[]> carList){
+
+        Object[] col_booking_list = {"ID", "Brand", "Model", "Plate", "Color", "KM", "Year","Type" , "Fuel", "Gear"};
+
+        createTable(this.tmdl_booking, this.tbl_booking, col_booking_list, carList);
+
+    }
+
     public void loadModelFilter() {
         this.cmb_s_model_type.setModel(new DefaultComboBoxModel<>(Model.Type.values()));
         this.cmb_s_model_type.setSelectedItem(null);
@@ -286,7 +344,6 @@ public class AdminView extends Layout {
         this.cmb_s_model_fuel.setModel(new DefaultComboBoxModel<>(Model.Fuel.values()));
         this.cmb_s_model_fuel.setSelectedItem(null);
         loadModelFilterBrand();
-
 
     }
     public void loadModelFilterBrand() {
@@ -297,18 +354,20 @@ public class AdminView extends Layout {
         this.cmb_s_model_brand.setSelectedItem(null);
     }
 
-    public void loadCarTable(){
-
-        Object[] col_car = {"ID", "Brand", "Model", "Plate", "Color", "KM", "Year","Type" , "Fuel", "Gear"};
-        ArrayList<Object[]> carList = this.carManager.getForTable(col_car.length, this.carManager.findAll());
-        createTable(this.tmdl_car, this.tbl_car, col_car, carList);
-
-
-
+    public void loadBookingFilter(){
+        this.cmb_booking_type.setModel(new DefaultComboBoxModel<>(Model.Type.values()));
+        this.cmb_booking_type.setSelectedItem(null);
+        this.cmb_booking_gear.setModel(new DefaultComboBoxModel<>(Model.Gear.values()));
+        this.cmb_booking_gear.setSelectedItem(null);
+        this.cmb_booking_fuel.setModel(new DefaultComboBoxModel<>(Model.Fuel.values()));
+        this.cmb_booking_fuel.setSelectedItem(null);
     }
 
 
-
-
-
+    private void createUIComponents() throws ParseException {
+        this.fld_strt_date = new JFormattedTextField(new MaskFormatter("##/##/####"));
+        this.fld_strt_date.setText("10/10/2023");
+        this.fld_fnsh_date = new JFormattedTextField(new MaskFormatter("##/##/####"));
+        this.fld_fnsh_date.setText("16/10/2023");
     }
+}

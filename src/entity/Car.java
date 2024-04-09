@@ -18,6 +18,9 @@ public class Car {
         AQUA
     }
 
+    public Car() {
+    }
+
     public int getId() {
         return id;
     }
