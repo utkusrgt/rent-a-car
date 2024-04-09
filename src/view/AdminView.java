@@ -1,10 +1,12 @@
 package view;
 
 import business.BrandManager;
+import business.CarManager;
 import business.ModelManager;
 import core.ComboItem;
 import core.Helper;
 import entity.Brands;
+import entity.Car;
 import entity.Model;
 import entity.User;
 
@@ -26,6 +28,7 @@ public class AdminView extends Layout {
     private JPanel pnl_mdel;
     private JScrollPane scroll_model;
     private JTable tbl_model;
+    private JTable tbl_car;
     private JButton btn_search;
     private JComboBox cmb_s_model_brand;
     private JComboBox cmb_s_model_type;
@@ -36,18 +39,25 @@ public class AdminView extends Layout {
     private JLabel lbl_search_fuel;
     private JLabel lbl_search_gear;
     private JButton btn_cncl_model;
+    private JPanel pnl_car;
+    private JScrollPane scrl_car;
     private User user;
     private DefaultTableModel tmdl_brand = new DefaultTableModel();
     private DefaultTableModel tmdl_model = new DefaultTableModel();
+    private DefaultTableModel tmdl_car = new DefaultTableModel();
     private BrandManager brandManager;
     private ModelManager modelManager;
+    private CarManager carManager;
     private JPopupMenu brand_Menu;
     private JPopupMenu model_Menu;
+    private JPopupMenu car_menu;
     private Object[] col_model;
+
 
     public AdminView(User user) {
         this.brandManager = new BrandManager();
         this.modelManager = new ModelManager();
+        this.carManager = new CarManager();
         this.add(container);
         this.initializeGUI(1000, 400);
         this.user = user;
@@ -57,15 +67,74 @@ public class AdminView extends Layout {
         }
         this.lbl_welcome.setText(this.user.getUsername());
 
+
+        //Brand Tab
         loadBrandTable();
         loadBrandComponent();
+
+        //Model Tab
 
         loadModelTable(null);
         loadModelComponent();
         loadModelFilter();
 
+        //Car Tab
+        loadCarTable();
+        loadCarComponent();
+
 
     }
+
+    public void loadCarComponent(){
+        tableRowSelect(this.tbl_car);
+        this.car_menu = new JPopupMenu();
+        this.car_menu.add("New").addActionListener(e -> {
+            CarView carView = new CarView(new Car());
+            carView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadCarTable();
+                }
+            });
+        });
+
+        this.car_menu.add("Update").addActionListener(e -> {
+            int selectCarId = this.getTableSelectedRow(tbl_car, 0);
+            CarView carView = new CarView(this.carManager.getByID(selectCarId));
+            carView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadCarTable();
+                }
+            });
+
+
+
+        });this.car_menu.add("Delete").addActionListener(e -> {
+
+            if(Helper.confirm("sure")){
+                int selectCarID = this.getTableSelectedRow(tbl_car, 0);
+                if(this.carManager.delete(selectCarID));
+                Helper.showMsg("done");
+                loadModelTable(null);
+            }else{
+                Helper.showMsg("updateError");
+            }
+        });
+        this.tbl_car.setComponentPopupMenu(car_menu);
+
+
+
+    }
+
+
+
+
+
+
+
+
+
 
     private void loadModelComponent() {
         tableRowSelect(this.tbl_model);
@@ -77,6 +146,7 @@ public class AdminView extends Layout {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     loadModelTable(null);
+
                 }
             });
 
@@ -88,6 +158,7 @@ public class AdminView extends Layout {
                 @Override
                 public void windowClosed(WindowEvent e) {
                     loadModelTable(null);
+                    loadCarTable();
                 }
             });
         });
@@ -99,6 +170,7 @@ public class AdminView extends Layout {
                 if(this.modelManager.delete(selectModelID));
                 Helper.showMsg("done");
                 loadModelTable(null);
+                loadCarTable();
             }else{
                 Helper.showMsg("updateError");
             }
@@ -162,6 +234,7 @@ public class AdminView extends Layout {
                     loadBrandTable();
                     loadModelTable(null);
                     loadModelFilterBrand();
+                    loadCarTable();
                 }
             });
 
@@ -176,6 +249,7 @@ public class AdminView extends Layout {
                 loadBrandTable();
                 loadModelTable(null);
                 loadModelFilterBrand();
+                loadCarTable();
             }else{
                 Helper.showMsg("updateError");
             }
@@ -223,8 +297,18 @@ public class AdminView extends Layout {
         this.cmb_s_model_brand.setSelectedItem(null);
     }
 
+    public void loadCarTable(){
+
+        Object[] col_car = {"ID", "Brand", "Model", "Plate", "Color", "KM", "Year","Type" , "Fuel", "Gear"};
+        ArrayList<Object[]> carList = this.carManager.getForTable(col_car.length, this.carManager.findAll());
+        createTable(this.tmdl_car, this.tbl_car, col_car, carList);
+
+
+
+    }
 
 
 
 
-}
+
+    }
