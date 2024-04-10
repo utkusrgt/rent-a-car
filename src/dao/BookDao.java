@@ -80,7 +80,8 @@ public class BookDao {
             pr.setInt(1, book.getCar_id());
             pr.setString(2, book.getName());
             pr.setString(3, book.getIdno());
-            pr.setString(5, book.getMpno());
+            pr.setString(4, book.getMpno());
+            pr.setString(5, book.getMail());
             pr.setDate(6, Date.valueOf(book.getStrt_date()));
             pr.setDate(7, Date.valueOf(book.getFnsh_date()));
             pr.setInt(8,book.getPrc());

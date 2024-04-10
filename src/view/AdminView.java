@@ -13,6 +13,8 @@ import entity.User;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.ParseException;
@@ -82,6 +84,10 @@ public class AdminView extends Layout {
         }
         this.lbl_welcome.setText(this.user.getUsername());
 
+        //General Tab
+
+        loadComponent();
+
 
         //Brand Tab
         loadBrandTable();
@@ -103,6 +109,40 @@ public class AdminView extends Layout {
         loadBookingFilter();
 
 
+
+    }
+
+    private void loadComponent(){
+        btn_logout.addActionListener(e -> {
+            dispose();
+            LoginView loginView = new LoginView();
+        });
+    }
+
+
+    public void loadBookingComponent(){
+        tableRowSelect(this.tbl_booking);
+        this.bookingMenu = new JPopupMenu();
+        this.bookingMenu.add("Rent").addActionListener(e -> {
+            int selectedCarID = this.getTableSelectedRow(this.tbl_booking, 0);
+            BookingView bookingView = new BookingView(
+                    this.carManager.getByID(selectedCarID),
+                    this.fld_strt_date.getText(),
+                    this.fld_fnsh_date.getText()
+
+
+            );
+            bookingView.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    loadBookingTable(null);
+                    loadBookingFilter();
+                }
+            });
+
+        });
+        this.tbl_booking.setComponentPopupMenu(bookingMenu);
+
         btn_book_find.addActionListener(e -> {
             ArrayList<Car> carList = this.carManager.searchForBooking(
                     fld_strt_date.getText(),
@@ -120,15 +160,6 @@ public class AdminView extends Layout {
             loadBookingFilter();
 
         });
-    }
-
-    public void loadBookingComponent(){
-        tableRowSelect(this.tbl_booking);
-        this.bookingMenu = new JPopupMenu();
-        this.bookingMenu.add("Rent").addActionListener(e -> {
-
-        });
-        this.tbl_booking.setComponentPopupMenu(bookingMenu);
     }
 
     public void loadCarComponent(){

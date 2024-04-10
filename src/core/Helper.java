@@ -38,7 +38,7 @@ public class Helper {
                 title = "Warning";
                 break;
             case "saveError":
-                msg = "Save already exists!";
+                msg = "Save Failed!";
                 title = "Warning";
                 break;
             case "updateError":
