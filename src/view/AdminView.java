@@ -189,7 +189,8 @@ public class AdminView extends Layout {
 
 
 
-        });this.car_menu.add("Delete").addActionListener(e -> {
+        });
+        this.car_menu.add("Delete").addActionListener(e -> {
 
             if(Helper.confirm("sure")){
                 int selectCarID = this.getTableSelectedRow(tbl_car, 0);

@@ -18,6 +18,7 @@ public class Model {
         DIESEL
     }
 
+
     public enum Gear {
         MANUEL,
         AUTO

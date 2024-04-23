@@ -41,8 +41,8 @@ public class LoginView extends Layout {
                     dispose();
                 }
             }
-
         });
+
     }
 
     private void createUIComponents() {

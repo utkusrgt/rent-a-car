@@ -32,9 +32,9 @@ public class BrandManager {
     }
 
 
-    public ArrayList<Brands> findAll() {
-        return this.brandDao.findAll();
-    }
+        public ArrayList<Brands> findAll() {
+            return this.brandDao.findAll();
+        }
 
     public boolean save(Brands brands) {
         if (brands.getId() != 0) {
